@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'byebug'
 
 
 describe HasMagicColumns do

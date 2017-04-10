@@ -2,6 +2,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', ' >= 4.0.0'
+gem 'byebug'
 
 group :test do
   gem 'rspec-rails', ' >= 3.0.0'

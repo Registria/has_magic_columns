@@ -1,5 +1,4 @@
 
-require 'debugger'
 require 'database_cleaner'
 require 'rubygems'
 require "active_record"

@@ -68,7 +68,7 @@ module HasMagicColumns
 
       def valid?(context = nil)
         output = super(context)
-        magic_columns_with_scoped.each do |columns|
+        magic_columns_with_scoped.each do |column|
           if column.is_required?
             validates_presence_of(column.name)
           end
