@@ -143,9 +143,10 @@ describe HasMagicColumns do
 
   context "magic_column class method" do
     it "datatypes method" do
+      byebug
       expect(MagicColumn.datatypes.class).to be(Array)
-      expect(MagicColumn.datatypes.size).to eq(4)
-      expect(MagicColumn.datatypes.first).to eq("check_box_boolean")
+      expect(MagicColumn.datatypes.size).to eq(5)
+      expect(MagicColumn.datatypes.first).to eq("string")
     end
   end
 end
