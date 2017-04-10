@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'has_magic_fields/version'
+require 'has_magic_columns/version'
 
 Gem::Specification.new do |s|
-  s.name          = "has_magic_fields"
-  s.version       = HasMagicFields::VERSION
-  s.authors       = ["ikeqiao"]
-  s.email         = ["zhzsi@126.com"]
-  s.description   = %q{Custom fields forActiveRecord models, suppport Rails 4!}
-  s.summary       = %q{Allow addition of custom 'magic' fields to ActiveRecord models.}
-  s.homepage      = "https://github.com/ikeqiao/has_magic_fields"
+  s.name          = "has_magic_columns"
+  s.version       = HasMagicColumns::VERSION
+  s.authors       = ""
+  s.email         = ""
+  s.description   = %q{Magic Columns for Rails 4}
+  s.summary       = %q{has_magic_columns gem updated, based on the has_magic_fields fork}
+  s.homepage      = "https://github.com/registria/has_magic_columns"
   s.license       = "MIT"
 
   s.files         = `git ls-files`.split($/)

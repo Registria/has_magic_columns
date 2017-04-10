@@ -47,40 +47,40 @@ ActiveRecord::Schema.define do
   end
 
 
-  require_relative '../lib/generators/has_magic_fields/install/templates/migration'
-  AddHasMagicFieldsTables.new.change
-  
+  require_relative '../lib/generators/has_magic_columns/install/templates/migration'
+  AddHasMagicColumnsTables.new.change
+
 end
 
 
 RSpec.configure do |config|
-  
+
   config.before(:all) do
     class Account < ActiveRecord::Base
-      include HasMagicFields::Extend
+      include HasMagicColumns::Extend
       has_many :users
-      has_magic_fields
+      has_magic_columns
     end
 
     class Person < ActiveRecord::Base
-      include HasMagicFields::Extend
-      has_magic_fields
+      include HasMagicColumns::Extend
+      has_magic_columns
     end
 
     class User < ActiveRecord::Base
-      include HasMagicFields::Extend
+      include HasMagicColumns::Extend
       belongs_to :account
-      has_magic_fields :through => :account
-    end 
+      has_magic_columns :through => :account
+    end
 
     class Product < ActiveRecord::Base
-      include HasMagicFields::Extend
+      include HasMagicColumns::Extend
       belongs_to :account
-      has_magic_fields :through => :account
-    end 
+      has_magic_columns :through => :account
+    end
 
   end
-  
+
   config.after(:all) do
   end
 
@@ -95,4 +95,3 @@ RSpec.configure do |config|
     end
   end
 end
-

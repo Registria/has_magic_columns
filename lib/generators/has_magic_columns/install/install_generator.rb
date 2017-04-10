@@ -1,12 +1,12 @@
 require 'rails/generators/base'
 
-module HasMagicFields
+module HasMagicColumns
   class InstallGenerator < Rails::Generators::Base
     include Rails::Generators::Migration
 
     source_root File.expand_path('../templates',__FILE__)
 
-    desc "Add has_magic_fields migration."
+    desc "Add has_magic_columns migration."
 
     def self.next_migration_number(path)
       unless @prev_migration_nr
@@ -18,7 +18,7 @@ module HasMagicFields
     end
 
     def add_migration
-      migration_template "migration.rb", "db/migrate/add_has_magic_fields_tables.rb"
+      migration_template "migration.rb", "db/migrate/add_has_magic_columns_tables.rb"
     end
   end
 end

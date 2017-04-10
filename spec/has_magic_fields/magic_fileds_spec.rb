@@ -1,28 +1,28 @@
 require 'spec_helper'
 
 
-describe HasMagicFields do
+describe HasMagicColumns do
 
   context "on a single model" do
     before(:each) do
       @charlie = Person.create(name: "charlie")
     end
 
-    it "initializes magic fields correctly" do
+    it "initializes magic columns correctly" do
       expect(@charlie).not_to be(nil)
       expect(@charlie.class).to be(Person)
-      expect(@charlie.magic_fields).not_to be(nil)
+      expect(@charlie.magic_columns).not_to be(nil)
     end
 
-    it "allows adding a magic field" do
+    it "allows adding a magic columns" do
       @charlie.create_magic_filed(:name => 'salary')
-      expect(@charlie.magic_fields.length).to eq(1)
+      expect(@charlie.magic_columns.length).to eq(1)
     end
 
     it "validates_uniqueness_of name in a object" do
       @charlie.create_magic_filed(:name => 'salary')
-      before_fields_count = MagicField.count
-      expect(@charlie.magic_fields.length).to eq(1)
+      before_columns_count = MagicColumn.count
+      expect(@charlie.magic_columns.length).to eq(1)
       expect(lambda{@charlie.create_magic_filed(:name => 'salary')}).to raise_error
       expect(@charlie.magic_fields.length).to eq(1)
       after_fields_count = MagicField.count
@@ -43,7 +43,7 @@ describe HasMagicFields do
      @charlie.last_name = "zongsi"
      expect(@charlie.save).to be(true)
     end
-      
+
     it "allows datatype to be :date" do
       @charlie.create_magic_filed(:name => "birthday", :datatype => :date)
       @charlie.birthday = Date.today

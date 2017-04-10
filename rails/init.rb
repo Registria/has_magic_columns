@@ -1,1 +1,1 @@
-require 'has_magic_fields'
+require 'has_magic_columns'
