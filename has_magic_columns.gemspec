@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors       = ""
   s.email         = ""
   s.description   = %q{Magic Columns for Rails 4}
-  s.summary       = %q{has_magic_columns gem updated, based on the has_magic_fields fork}
+  s.summary       = %q{Rails 4+ compatible version of this gem - refactored using has_magic_fields gem as the base}
   s.homepage      = "https://github.com/registria/has_magic_columns"
   s.license       = "MIT"
 

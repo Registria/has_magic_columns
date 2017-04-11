@@ -1,30 +1,23 @@
 class MagicColumn < ActiveRecord::Base
-  has_many :magic_column_relationships, :dependent => :destroy
+  has_many :magic_column_relationships
   has_many :owners, :through => :magic_column_relationships, :as => :owner
+  has_many :magic_options
   has_many :magic_attributes, :dependent => :destroy
 
   validates_presence_of :name, :datatype
   validates_format_of :name, :with => /\A[a-z][a-z0-9_]+\z/
 
-  before_save :set_pretty_name
-
-  def self.datatypes
-    ["string","check_box_boolean", "date", "datetime", "integer"]
-  end
-
   def type_cast(value)
     begin
       case datatype.to_sym
-        when :string
-          value
         when :check_box_boolean
-          (value.to_int == 1) ? true : false
+          (value.to_i == 1) ? true : false
         when :date
           Date.parse(value)
         when :datetime
           Time.parse(value)
         when :integer
-          value.to_int
+          value.to_i
       else
         value
       end
@@ -34,8 +27,7 @@ class MagicColumn < ActiveRecord::Base
   end
 
   # Display a nicer (possibly user-defined) name for the column or use a fancified default.
-  def set_pretty_name
-    self.pretty_name = name.humanize if  pretty_name.blank?
+  def pretty_name
+    super || name.humanize
   end
-
 end

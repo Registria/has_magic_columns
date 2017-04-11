@@ -71,13 +71,6 @@ RSpec.configure do |config|
       belongs_to :account
       has_magic_columns :through => :account
     end
-
-    class Product < ActiveRecord::Base
-      include HasMagicColumns::Extend
-      belongs_to :account
-      has_magic_columns :through => :account
-    end
-
   end
 
   config.after(:all) do

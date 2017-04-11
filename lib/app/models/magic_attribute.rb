@@ -5,5 +5,4 @@ class MagicAttribute < ActiveRecord::Base
   def to_s
     value
   end
-
 end
