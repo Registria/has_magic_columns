@@ -48,7 +48,11 @@ module HasMagicColumns
           attributes.select{ |k, v| magic_attrs.include?(k) }.each do |k, v|
             col = find_magic_column_by_name(k)
             attr = find_magic_attribute_by_column(col).first
-            attr.update_attributes(:value => v)
+            if attr
+              attr.update_attributes(:value => v)
+            else
+              write_magic_attribute(k, v)
+            end
           end
 
           true
