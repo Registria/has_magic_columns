@@ -67,8 +67,12 @@ module HasMagicColumns
       def read_attribute_with_magic(attr_name)
         column = find_magic_column_by_name(attr_name)
         attribute = find_magic_attribute_by_column(column)
-        value = (attr = attribute.first) ? attr.to_s : column.default
-        value.nil?  ? nil : column.type_cast(value)
+        if attribute.count > 1
+          attribute.map { |attr| column.type_cast(attr.value) }
+        else
+          value = (attr = attribute.first) ? attr.to_s : column.default
+          value.nil?  ? nil : column.type_cast(value)
+        end
       end
 
       def method_missing(method_id, *args)
@@ -104,7 +108,15 @@ module HasMagicColumns
       def write_magic_attribute(column_name, value)
         column = find_magic_column_by_name(column_name)
         attribute = find_magic_attribute_by_column(column)
-        (attr = attribute.first) ? update_magic_attribute(attr, value) : create_magic_attribute(column, value)
+
+        if value.is_a?(Array) && column.datatype == "check_box_multiple"
+          #TODO CHECK IF EXIST, THEN UDPATE, DELETE UNUSED SO ON
+          value.each do |val|
+            create_magic_attribute(column, val)
+          end
+        else
+          (attr = attribute.first) ? update_magic_attribute(attr, value) : create_magic_attribute(column, value)
+        end
       end
     end
 

@@ -55,6 +55,13 @@ describe HasMagicColumns do
       expect(@charlie.retired).to eq(false)
     end
 
+    it "allows datatype to be :check_box_multiple" do
+      @charlie.magic_columns.create(:name => "multiple", :datatype => "check_box_multiple")
+      @charlie.multiple = ['1', '2', '3']
+      expect(@charlie.save).to be true
+      expect(@charlie.multiple).to eq(['1', '2', '3'])
+    end
+
     it "allows default to be set" do
       @charlie.magic_columns.create(:name => "bonus", :default => "40000")
       @charlie.bonus.should == "40000"
