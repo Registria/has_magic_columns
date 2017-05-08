@@ -70,7 +70,7 @@ module HasMagicColumns
       end
 
       def write_attribute(attr_name, value)
-        if self.attributes.include?(attr_name)
+        if self.attributes.include?(attr_name.to_s)
           super
         else
           method_missing("#{attr_name}=".to_sym, value)
@@ -78,7 +78,7 @@ module HasMagicColumns
       end
 
       def read_attribute(attr_name)
-        if self.attributes.include?(attr_name)
+        if self.attributes.include?(attr_name.to_s)
           super
         else
           attr_name = attr_name.to_s

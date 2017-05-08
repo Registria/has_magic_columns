@@ -8,7 +8,7 @@ describe HasMagicColumns do
     before(:each) do
       @charlie = Person.create(name: "charlie")
     end
-    
+
     it "initializes magic columns correctly" do
       expect(@charlie).not_to be(nil)
       expect(@charlie.class).to be(Person)
@@ -31,6 +31,7 @@ describe HasMagicColumns do
     it 'allows the use of write_attribute and read_attribute' do
       @charlie.magic_columns.create(:name => 'last_name')
       expect(@charlie.respond_to?(:last_name)).to be true
+      expect(@charlie.respond_to?("last_name")).to be true
       @charlie.write_attribute(:last_name, "Roberts")
       @charlie.save
       @charlie = Person.find(@charlie.id)
