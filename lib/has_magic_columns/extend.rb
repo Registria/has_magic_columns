@@ -20,7 +20,7 @@ module HasMagicColumns
             class_eval do
               def inherited_magic_columns
                 raise "Cannot inherit MagicColumns from a non-existant association: #{@inherited_from}" unless self.class.method_defined?(inherited_from)# and self.send(inherited_from)
-                self.send(inherited_from).magic_columns
+                self.send(inherited_from) ? self.send(inherited_from).magic_columns : []
               end
             end
             alias_method :magic_columns, :inherited_magic_columns unless method_defined? :magic_columns
@@ -63,6 +63,27 @@ module HasMagicColumns
 
       def magic_column_names
         magic_columns.map(&:name)
+      end
+
+      def respond_to_missing?(method_name, include_private = false)
+        magic_column_names.map { |attr| "#{attr}=" }.include?(method_name.to_s) || magic_column_names.map { |attr| "#{attr}" }.include?(method_name.to_s) || super
+      end
+
+      def write_attribute(attr_name, value)
+        if self.attributes.include?(attr_name)
+          super
+        else
+          method_missing("#{attr_name}=".to_sym, value)
+        end
+      end
+
+      def read_attribute(attr_name)
+        if self.attributes.include?(attr_name)
+          super
+        else
+          attr_name = attr_name.to_s
+          read_attribute_with_magic(attr_name)
+        end
       end
 
       private
