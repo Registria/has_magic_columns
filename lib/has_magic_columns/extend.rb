@@ -46,15 +46,8 @@ module HasMagicColumns
 
         if super(attributes.select{ |k, v| !magic_attrs.include?(k) })
           attributes.select{ |k, v| magic_attrs.include?(k) }.each do |k, v|
-            col = find_magic_column_by_name(k)
-            attr = find_magic_attribute_by_column(col).first
-            if attr
-              attr.update_attributes(:value => v)
-            else
-              write_magic_attribute(k, v)
-            end
+            write_magic_attribute(k, v)
           end
-
           true
         else
           false
@@ -115,7 +108,7 @@ module HasMagicColumns
       end
 
       def find_magic_attribute_by_column(column)
-        magic_attributes.to_a.find_all {|attr| attr.magic_column_id == column.id}
+        magic_attributes.reload.to_a.find_all {|attr| attr.magic_column_id == column.id}
       end
 
       def find_magic_column_by_name(attr_name)
@@ -132,15 +125,22 @@ module HasMagicColumns
 
       def write_magic_attribute(column_name, value)
         column = find_magic_column_by_name(column_name)
-        attribute = find_magic_attribute_by_column(column)
+        existing = find_magic_attribute_by_column(column)
 
         if value.is_a?(Array) && column.datatype == "check_box_multiple"
-          #TODO CHECK IF EXIST, THEN UDPATE, DELETE UNUSED SO ON
-          value.each do |val|
-            create_magic_attribute(column, val)
+          existing.map(&:delete) if existing
+          value.reject!(&:blank?)
+          if value.present?
+            value.each do |val|
+              create_magic_attribute(column, val)
+            end
           end
         else
-          (attr = attribute.first) ? update_magic_attribute(attr, value) : create_magic_attribute(column, value)
+          if (attr = existing.first)
+            value.present? ? update_magic_attribute(attr, value) : attr.destroy
+          else
+            create_magic_attribute(column, value)
+          end
         end
       end
     end

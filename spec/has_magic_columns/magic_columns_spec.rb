@@ -85,10 +85,10 @@ describe HasMagicColumns do
       @charlie.multiple = ['1', '2', '3']
       expect(@charlie.save).to be true
       expect(@charlie.multiple).to eq(['1', '2', '3'])
-      @charlie.multiple = ['1']
-      expect(@charlie.save).to be true
+      @charlie.update_attributes(multiple: ['1'])
       expect(@charlie.multiple).to eq(['1'])
-      #TODO this doesn't work yet, fixing this might brake app overrides logic
+      @charlie.update_attributes(multiple: '2')
+      expect(@charlie.multiple).to eq(['2'])
     end
 
     it "allows default to be set" do
