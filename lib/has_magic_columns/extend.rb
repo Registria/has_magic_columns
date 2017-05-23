@@ -108,7 +108,11 @@ module HasMagicColumns
       end
 
       def find_magic_attribute_by_column(column)
-        magic_attributes.reload.to_a.find_all {|attr| attr.magic_column_id == column.id}
+        if self.id
+          magic_attributes.reload.to_a.find_all { |attr| attr.magic_column_id == column.id }
+        else
+          magic_attributes.to_a.find_all { |attr| attr.magic_column_id == column.id }
+        end
       end
 
       def find_magic_column_by_name(attr_name)
