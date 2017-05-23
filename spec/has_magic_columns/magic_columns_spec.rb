@@ -73,6 +73,24 @@ describe HasMagicColumns do
       expect(@charlie.multiple).to eq(['1', '2', '3'])
     end
 
+    it ":check_box_multiple returns array for single element" do
+      @charlie.magic_columns.create(:name => "multiple", :datatype => "check_box_multiple")
+      @charlie.multiple = ['1']
+      expect(@charlie.save).to be true
+      expect(@charlie.multiple).to eq(['1'])
+    end
+
+    it ":check_box_multiple properly updates attributes" do
+      @charlie.magic_columns.create(:name => "multiple", :datatype => "check_box_multiple")
+      @charlie.multiple = ['1', '2', '3']
+      expect(@charlie.save).to be true
+      expect(@charlie.multiple).to eq(['1', '2', '3'])
+      @charlie.multiple = ['1']
+      expect(@charlie.save).to be true
+      expect(@charlie.multiple).to eq(['1'])
+      #TODO this doesn't work yet, fixing this might brake app overrides logic
+    end
+
     it "allows default to be set" do
       @charlie.magic_columns.create(:name => "bonus", :default => "40000")
       @charlie.bonus.should == "40000"

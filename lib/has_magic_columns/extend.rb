@@ -92,7 +92,7 @@ module HasMagicColumns
       def read_attribute_with_magic(attr_name)
         column = find_magic_column_by_name(attr_name)
         attribute = find_magic_attribute_by_column(column)
-        if attribute.count > 1
+        if column.datatype.to_s == 'check_box_multiple'
           attribute.map { |attr| column.type_cast(attr.value) }
         else
           value = (attr = attribute.first) ? attr.to_s : column.default
