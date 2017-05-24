@@ -86,9 +86,9 @@ describe HasMagicColumns do
         expect(@charlie.save).to be true
         expect(@charlie.multiple).to eq(["1", "2", "3"])
         @charlie.update_attributes(multiple: ["1"])
-        expect(@charlie.multiple).to eq(["1"])
+        expect(@charlie.reload.multiple).to eq(["1"])
         @charlie.update_attributes(multiple: "2")
-        expect(@charlie.multiple).to eq(["2"])
+        expect(@charlie.reload.multiple).to eq(["2"])
       end
     end
 
@@ -123,6 +123,17 @@ describe HasMagicColumns do
       @alice.magic_columns.create(name: "salary")
       lambda{@alice.salary}.should_not raise_error
       lambda{@account.salary}.should_not raise_error
+    end
+
+    before do
+      @alice2 = User.create(name: "alice2", account_id: @account.id)
+    end
+
+    it "doesn't repeat attributes for the same column" do
+      @alice.magic_columns.create(name: "color")
+      @alice.color = "red"
+      @alice.save
+      expect(@alice2.color).not_to eq "red"
     end
 
     it "allows adding a magic column to the parent" do

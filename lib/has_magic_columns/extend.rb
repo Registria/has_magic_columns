@@ -108,7 +108,9 @@ module HasMagicColumns
       end
 
       def find_magic_attribute_by_column(column)
-        column.magic_attributes.reload.to_a.find_all { |attr| attr.magic_column_id == column.id }
+        magic_attributes.to_a.find_all do |attr|
+         attr.magic_column_id == column.id
+        end
       end
 
       def find_magic_column_by_name(attr_name)
@@ -128,7 +130,7 @@ module HasMagicColumns
         existing = find_magic_attribute_by_column(column)
 
         if value.is_a?(Array) && column.datatype == "check_box_multiple"
-          existing.map(&:delete) if existing
+          existing.map(&:destroy) if existing
           value.reject!(&:blank?)
           if value.present?
             value.each do |val|
