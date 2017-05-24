@@ -138,8 +138,9 @@ module HasMagicColumns
             end
           end
         else
+          value = value.first if value.is_a?(Array)
+          
           if (attr = existing.first)
-            value = value.first if value.is_a?(Array)
             value.present? ? update_magic_attribute(attr, value) : attr.destroy
           else
             create_magic_attribute(column, value)
