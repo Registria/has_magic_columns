@@ -39,11 +39,24 @@ describe HasMagicColumns do
       expect(@charlie.read_attribute(:last_name)).to eq("Roberts")
     end
 
+    it "allows datatype to be :string" do
+      @charlie.magic_columns.create(name: "color", datatype: :date)
+      @charlie.color = "blue"
+      expect(@charlie.save).to be true
+      expect(@charlie.color).to eq("blue")
+      @charlie.update_attribute(:color, "red")
+      expect(@charlie.color).to eq("red")
+      @charlie.update_attribute(:color, ["green"])
+      expect(@charlie.color).to eq("green")
+    end
+
     it "allows datatype to be :date" do
       @charlie.magic_columns.create(name: "birthday", datatype: :date)
       @charlie.birthday = Date.today
       expect(@charlie.save).to be true
       expect(@charlie.birthday).to eq(Date.today)
+      @charlie.update_attribute(:birthday, Date.today + 1.day)
+      expect(@charlie.birthday).to eq(Date.today + 1.day)
     end
 
     it "allows datatype to be :datetime" do
@@ -57,12 +70,24 @@ describe HasMagicColumns do
       @charlie.age = 5
       expect(@charlie.save).to be true
       expect(@charlie.age).to eq(5)
+      @charlie.update_attribute(:age, 4)
+      expect(@charlie.age).to eq(4)
     end
 
     it "allows datatype to be :check_box_boolean" do
       @charlie.magic_columns.create(name: "retired", datatype: :check_box_boolean)
       @charlie.retired = false
       expect(@charlie.save).to be true
+      expect(@charlie.retired).to eq(false)
+      @charlie.update_attribute(:retired, true)
+      expect(@charlie.retired).to eq(true)
+      @charlie.update_attribute(:retired, 1)
+      expect(@charlie.retired).to eq(true)
+      @charlie.update_attribute(:retired, 0)
+      expect(@charlie.retired).to eq(false)
+      @charlie.update_attribute(:retired, "1")
+      expect(@charlie.retired).to eq(true)
+      @charlie.update_attribute(:retired, "0")
       expect(@charlie.retired).to eq(false)
     end
 

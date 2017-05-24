@@ -11,7 +11,7 @@ class MagicColumn < ActiveRecord::Base
     begin
       case datatype.to_sym
         when :check_box_boolean
-          (value.to_i == 1) ? true : false
+          bool_value(value)
         when :date
           Date.parse(value)
         when :datetime
@@ -29,5 +29,15 @@ class MagicColumn < ActiveRecord::Base
   # Display a nicer (possibly user-defined) name for the column or use a fancified default.
   def pretty_name
     super || name.humanize
+  end
+
+  private
+
+  def bool_value(value)
+    if value.to_s ==  "t" ||  value.to_s ==  "1"
+      true
+    else
+      false
+    end
   end
 end
