@@ -41,6 +41,7 @@ module HasMagicColumns
 
     module InstanceMethods
       def update_attributes(new_attributes)
+        return super if new_attributes.nil?
         attributes = new_attributes.stringify_keys
         magic_attrs = magic_columns.map(&:name)
 
@@ -139,7 +140,7 @@ module HasMagicColumns
           end
         else
           value = value.first if value.is_a?(Array)
-          
+
           if (attr = existing.first)
             value.present? ? update_magic_attribute(attr, value) : attr.destroy
           else
