@@ -96,7 +96,7 @@ module HasMagicColumns
 
       def method_missing(method_id, *args)
         super(method_id, *args)
-      rescue NoMethodError
+      rescue NameError
         method_name = method_id.to_s
         super(method_id, *args) unless magic_column_names.include?(method_name) or (md = /[\?|\=]/.match(method_name) and magic_column_names.include?(md.pre_match))
         if method_name =~ /=$/
