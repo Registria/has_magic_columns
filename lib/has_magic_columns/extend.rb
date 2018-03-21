@@ -40,21 +40,6 @@ module HasMagicColumns
     end
 
     module InstanceMethods
-      def update_attributes(new_attributes)
-        return super if new_attributes.nil?
-        attributes = new_attributes.stringify_keys
-        magic_attrs = magic_columns.map(&:name)
-
-        if super(attributes.select{ |k, v| !magic_attrs.include?(k) })
-          attributes.select{ |k, v| magic_attrs.include?(k) }.each do |k, v|
-            write_magic_attribute(k, v)
-          end
-          true
-        else
-          false
-        end
-      end
-
       def magic_column_names
         magic_columns.map(&:name)
       end

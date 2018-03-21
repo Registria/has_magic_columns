@@ -1,3 +1,3 @@
 module HasMagicColumns
-  VERSION = "0.2.67"
+  VERSION = "0.3.0"
 end
