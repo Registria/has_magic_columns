@@ -20,9 +20,6 @@ end
 
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
-# ActiveRecord::Base.configurations = true
-# ActiveRecord::Base.logger = Logger.new(STDOUT)
-
 ActiveRecord::Schema.verbose = false
 
 ActiveRecord::Schema.define do

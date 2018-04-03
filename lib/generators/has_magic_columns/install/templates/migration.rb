@@ -1,4 +1,4 @@
-class AddHasMagicColumnsTables < ActiveRecord::Migration
+class AddHasMagicColumnsTables < ActiveRecord::Migration[5.1]
   def change
     create_table :magic_columns do |t|
       t.column :name,           :string

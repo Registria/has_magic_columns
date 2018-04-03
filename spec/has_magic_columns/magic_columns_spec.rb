@@ -17,7 +17,7 @@ describe HasMagicColumns do
 
     it "allows adding a magic columns" do
       @charlie.magic_columns.create(name: "salary")
-      @charlie.magic_columns.length.should be(1)
+      expect(@charlie.magic_columns.length).to eq(1)
     end
 
     it "allows setting and saving of magic attributes" do
@@ -25,7 +25,7 @@ describe HasMagicColumns do
       @charlie.salary = 50000
       @charlie.save
       @charlie = Person.find(@charlie.id)
-      @charlie.salary.should_not be_nil
+      expect(@charlie.salary).not_to be(nil)
     end
 
     it "allows the use of write_attribute and read_attribute" do
@@ -119,12 +119,12 @@ describe HasMagicColumns do
 
     it "allows default to be set" do
       @charlie.magic_columns.create(name: "bonus", default: "40000")
-      @charlie.bonus.should == "40000"
+      expect(@charlie.bonus).to eq("40000")
     end
 
     it "allows a pretty display name to be set" do
       @charlie.magic_columns.create(name: "zip", pretty_name: "Zip Code")
-      @charlie.magic_columns.last.pretty_name.should == "Zip Code"
+      expect(@charlie.magic_columns.last.pretty_name).to eq("Zip Code")
     end
   end
 
@@ -135,19 +135,19 @@ describe HasMagicColumns do
     end
 
     it "initializes magic columns correctly" do
-      @alice.should_not be_nil
-      @alice.class.should be(User)
-      @alice.magic_columns.should_not be_nil
+      expect(@alice).not_to be(nil)
+      expect(@alice.class).to be(User)
+      expect(@alice.magic_columns).not_to be(nil)
 
-      @account.should_not be_nil
-      @account.class.should be(Account)
-      @alice.magic_columns.should_not be_nil
+      expect(@account).not_to be(nil)
+      expect(@account.class).to be(Account)
+      expect(@alice.magic_columns).not_to be(nil)
     end
 
     it "allows adding a magic column to the child" do
       @alice.magic_columns.create(name: "salary")
-      lambda{@alice.salary}.should_not raise_error
-      lambda{@account.salary}.should_not raise_error
+      expect(lambda{@alice.salary}).not_to raise_error
+      expect(lambda{@account.salary}).not_to raise_error
     end
 
     before do
@@ -163,13 +163,13 @@ describe HasMagicColumns do
 
     it "allows adding a magic column to the parent" do
       @account.magic_columns.create(name: "age")
-      lambda{@alice.age}.should_not raise_error
+      expect(lambda{@alice.age}).not_to raise_error
     end
 
     it "sets magic columns for all child models" do
       @bob = User.create(name: "bob", account_id: @account.id)
       @bob.magic_columns.create(name: "birthday")
-      lambda{@alice.birthday}.should_not raise_error
+      expect(lambda{@alice.birthday}).not_to raise_error
     end
   end
 end
