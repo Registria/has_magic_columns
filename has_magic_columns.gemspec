@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version       = HasMagicColumns::VERSION
   s.authors       = ""
   s.email         = ""
-  s.description   = %q{Magic Columns for Rails 4}
-  s.summary       = %q{Rails 4+ compatible version of this gem - refactored using has_magic_fields gem as the base}
+  s.description   = %q{Magic Columns for Rails 5}
+  s.summary       = %q{Rails 5+ compatible version of this gem - refactored using has_magic_fields gem as the base}
   s.homepage      = "https://github.com/registria/has_magic_columns"
   s.license       = "MIT"
 
@@ -18,8 +18,8 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^(test|s|features)/})
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "bundler", "~> 1.3"
+  s.add_development_dependency "bundler", "~> 1.16"
   s.add_development_dependency "rake"
-  s.add_dependency("rails", [">= 4.0.0"])
+  s.add_dependency("rails", [">= 5.0.0"])
 
 end
