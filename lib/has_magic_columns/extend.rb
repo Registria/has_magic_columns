@@ -105,17 +105,17 @@ module HasMagicColumns
 
       def create_magic_attribute(magic_column, value)
         magic_attributes << MagicAttribute.create(:magic_column => magic_column, :value => value)
-        self.touch
+        self.touch if self.persisted?
       end
 
       def update_magic_attribute(magic_attribute, value)
         magic_attribute.update_attributes(:value => value)
-        self.touch if magic_attribute.updated_at > self.updated_at
+        self.touch if self.persisted? && magic_attribute.updated_at > self.updated_at
       end
 
       def destroy_magic_attribute(magic_attribute)
         magic_attribute.destroy
-        self.touch
+        self.touch if self.persisted?
       end
 
       def write_magic_attribute(column_name, value)
