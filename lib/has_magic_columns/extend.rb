@@ -108,7 +108,7 @@ module HasMagicColumns
       end
 
       def update_magic_attribute(magic_attribute, value)
-        magic_attribute.update_attributes(:value => value)
+        magic_attribute.update_attributes(:value => value) && self.touch
       end
 
       def write_magic_attribute(column_name, value)
