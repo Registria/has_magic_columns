@@ -91,7 +91,25 @@ describe HasMagicColumns do
       expect(@charlie.retired).to eq(false)
     end
 
-    context ':check_box_multiple' do
+    it "allows default to be set" do
+      @charlie.magic_columns.create(name: "bonus", default: "40000")
+      @charlie.bonus.should == "40000"
+    end
+
+    it "allows a pretty display name to be set" do
+      @charlie.magic_columns.create(name: "zip", pretty_name: "Zip Code")
+      @charlie.magic_columns.last.pretty_name.should == "Zip Code"
+    end
+
+    it "touches parent on update" do
+      @charlie.magic_columns.create(name: "zip")
+      expect { @charlie.update_attributes(zip: "12345") }.to change { @charlie.updated_at }
+      expect { @charlie.update_attributes(zip: "12345") }.to_not change { @charlie.updated_at }
+      expect { @charlie.update_attributes(zip: "54321") }.to change { @charlie.updated_at }
+      expect { @charlie.update_attributes(zip: "") }.to change { @charlie.updated_at }
+    end
+
+    context ":check_box_multiple" do
       before { @charlie.magic_columns.create(name: "multiple", datatype: "check_box_multiple") }
 
       it "allows datatype to be :check_box_multiple" do
@@ -115,16 +133,6 @@ describe HasMagicColumns do
         @charlie.update_attributes(multiple: "2")
         expect(@charlie.reload.multiple).to eq(["2"])
       end
-    end
-
-    it "allows default to be set" do
-      @charlie.magic_columns.create(name: "bonus", default: "40000")
-      @charlie.bonus.should == "40000"
-    end
-
-    it "allows a pretty display name to be set" do
-      @charlie.magic_columns.create(name: "zip", pretty_name: "Zip Code")
-      @charlie.magic_columns.last.pretty_name.should == "Zip Code"
     end
   end
 
@@ -154,7 +162,7 @@ describe HasMagicColumns do
       @alice2 = User.create(name: "alice2", account_id: @account.id)
     end
 
-    it "doesn't repeat attributes for the same column" do
+    it "does not repeat attributes for the same column" do
       @alice.magic_columns.create(name: "color")
       @alice.color = "red"
       @alice.save
