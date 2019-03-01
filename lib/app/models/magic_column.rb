@@ -5,7 +5,7 @@ class MagicColumn < ActiveRecord::Base
   has_many :magic_attributes, :dependent => :destroy
 
   validates_presence_of :name, :datatype
-  validates_format_of :name, :with => /\A[a-z][a-z0-9_]+\z/
+  validates_format_of :name, :with => /\A[a-zA-Z0-9_]+\z/
 
   def type_cast(value)
     begin
