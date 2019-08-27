@@ -116,6 +116,7 @@ module HasMagicColumns
       end
 
       def update_magic_attribute(magic_attribute, value)
+        return if magic_attribute.value == value
         @magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, value]
         magic_attribute.update_attributes(:value => value)
         self.touch if self.persisted? && magic_attribute.updated_at > self.updated_at
