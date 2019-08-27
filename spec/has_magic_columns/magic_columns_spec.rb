@@ -105,6 +105,23 @@ describe HasMagicColumns do
       expect { charlie.update_attributes(zip: "") }.to change { charlie.updated_at }
     end
 
+    it "tracks magic changes" do
+      charlie.magic_columns.create(name: "zip")
+      expect(charlie.magic_changes).to be_empty
+      expect(charlie.magic_changed?).to be false
+      charlie.update_attributes(zip: "12345")
+      expect(charlie.magic_changes).to eq "zip" => [nil, "12345"]
+      expect(charlie.magic_changed?).to be true
+      charlie.update_attributes(zip: "54321")
+      expect(charlie.magic_changes).to eq "zip" => ["12345", "54321"]
+      expect(charlie.magic_changed?).to be true
+      charlie.update_attributes(zip: nil)
+      expect(charlie.magic_changes).to eq "zip" => ["54321", nil]
+      expect(charlie.magic_changed?).to be true
+      expect(charlie.reload.magic_changes).to be_empty
+      expect(charlie.magic_changed?).to be false
+    end
+
     context ":check_box_multiple" do
       before { charlie.magic_columns.create(name: "multiple", datatype: "check_box_multiple") }
 

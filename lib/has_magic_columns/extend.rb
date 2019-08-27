@@ -41,7 +41,7 @@ module HasMagicColumns
 
     module InstanceMethods
       def magic_column_names
-        magic_columns.map(&:name)
+        magic_columns.pluck(:name)
       end
 
       def magic_changes
@@ -71,6 +71,11 @@ module HasMagicColumns
           attr_name = attr_name.to_s
           read_attribute_with_magic(attr_name)
         end
+      end
+
+      def reload
+        @magic_changes = {}
+        super
       end
 
       private
@@ -110,20 +115,20 @@ module HasMagicColumns
       end
 
       def create_magic_attribute(magic_column, value)
-        @magic_changes[magic_column.name] = [nil, value]
+        magic_changes[magic_column.name] = [nil, value]
         magic_attributes << MagicAttribute.create(:magic_column => magic_column, :value => value)
         self.touch if self.persisted?
       end
 
       def update_magic_attribute(magic_attribute, value)
         return if magic_attribute.value == value
-        @magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, value]
+        magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, value]
         magic_attribute.update_attributes(:value => value)
         self.touch if self.persisted? && magic_attribute.updated_at > self.updated_at
       end
 
       def destroy_magic_attribute(magic_attribute)
-        @magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, nil]
+        magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, nil]
         magic_attribute.destroy
         self.touch if self.persisted?
       end
@@ -151,7 +156,6 @@ module HasMagicColumns
         end
       end
     end
-
 
     %w{ models }.each do |dir|
       path = File.join(File.dirname(__FILE__), '../app', dir)
