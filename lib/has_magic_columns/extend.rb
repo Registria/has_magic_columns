@@ -88,7 +88,7 @@ module HasMagicColumns
           attribute.map { |attr| column.type_cast(attr.value) }
         else
           value = (attr = attribute.first) ? attr.to_s : column.default
-          value.nil?  ? nil : column.type_cast(value)
+          value.nil? ? nil : column.type_cast(value)
         end
       end
 
@@ -100,7 +100,7 @@ module HasMagicColumns
         if method_name =~ /=$/
           var_name = method_name.gsub('=', '')
           value = args.first
-          write_magic_attribute(var_name,value)
+          write_magic_attribute(var_name, value)
         else
           read_attribute_with_magic(method_name)
         end
