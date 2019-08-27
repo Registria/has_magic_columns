@@ -44,6 +44,14 @@ module HasMagicColumns
         magic_columns.map(&:name)
       end
 
+      def magic_changes
+        @magic_changes ||= {}
+      end
+
+      def magic_changed?
+        magic_changes.present?
+      end
+
       def respond_to_missing?(method_name, include_private = false)
         magic_column_names.map { |attr| "#{attr}=" }.include?(method_name.to_s) || magic_column_names.map { |attr| "#{attr}" }.include?(method_name.to_s) || super
       end
@@ -94,26 +102,27 @@ module HasMagicColumns
       end
 
       def find_magic_attribute_by_column(column)
-        magic_attributes.to_a.find_all do |attr|
-         attr.magic_column_id == column.id
-        end
+        magic_attributes.to_a.find_all { |attr| attr.magic_column_id == column.id }
       end
 
       def find_magic_column_by_name(attr_name)
-        magic_columns.to_a.find {|column| column.name == attr_name}
+        magic_columns.to_a.find { |column| column.name == attr_name }
       end
 
       def create_magic_attribute(magic_column, value)
+        @magic_changes[magic_column.name] = [nil, value]
         magic_attributes << MagicAttribute.create(:magic_column => magic_column, :value => value)
         self.touch if self.persisted?
       end
 
       def update_magic_attribute(magic_attribute, value)
+        @magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, value]
         magic_attribute.update_attributes(:value => value)
         self.touch if self.persisted? && magic_attribute.updated_at > self.updated_at
       end
 
       def destroy_magic_attribute(magic_attribute)
+        @magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, nil]
         magic_attribute.destroy
         self.touch if self.persisted?
       end
