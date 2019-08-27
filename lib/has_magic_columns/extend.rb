@@ -9,8 +9,8 @@ module HasMagicColumns
       def has_magic_columns(options = {})
         unless magical?
           # Associations
-          has_many :magic_attribute_relationships, :as => :owner, :dependent => :destroy
-          has_many :magic_attributes, :through => :magic_attribute_relationships, :dependent => :destroy
+          has_many :magic_attribute_relationships, as: :owner, dependent: :destroy
+          has_many :magic_attributes, through: :magic_attribute_relationships, dependent: :destroy
 
           # Inheritence
           cattr_accessor :inherited_from
@@ -27,8 +27,8 @@ module HasMagicColumns
 
           # otherwise the calling model has the relationships
           else
-            has_many :magic_column_relationships, :as => :owner, :dependent => :destroy
-            has_many :magic_columns, :through => :magic_column_relationships, :dependent => :destroy
+            has_many :magic_column_relationships, as: :owner, dependent: :destroy
+            has_many :magic_columns, through: :magic_column_relationships, dependent: :destroy
           end
         end
         include InstanceMethods
@@ -41,7 +41,15 @@ module HasMagicColumns
 
     module InstanceMethods
       def magic_column_names
-        magic_columns.map(&:name)
+        magic_columns.pluck(:name)
+      end
+
+      def magic_changes
+        @magic_changes ||= {}
+      end
+
+      def magic_changed?
+        magic_changes.present?
       end
 
       def respond_to_missing?(method_name, include_private = false)
@@ -65,6 +73,11 @@ module HasMagicColumns
         end
       end
 
+      def reload
+        @magic_changes = {}
+        super
+      end
+
       private
 
       # Load the MagicAttribute(s) associated with attr_name and cast them to proper type.
@@ -75,7 +88,7 @@ module HasMagicColumns
           attribute.map { |attr| column.type_cast(attr.value) }
         else
           value = (attr = attribute.first) ? attr.to_s : column.default
-          value.nil?  ? nil : column.type_cast(value)
+          value.nil? ? nil : column.type_cast(value)
         end
       end
 
@@ -87,33 +100,35 @@ module HasMagicColumns
         if method_name =~ /=$/
           var_name = method_name.gsub('=', '')
           value = args.first
-          write_magic_attribute(var_name,value)
+          write_magic_attribute(var_name, value)
         else
           read_attribute_with_magic(method_name)
         end
       end
 
       def find_magic_attribute_by_column(column)
-        magic_attributes.to_a.find_all do |attr|
-         attr.magic_column_id == column.id
-        end
+        magic_attributes.to_a.find_all { |attr| attr.magic_column_id == column.id }
       end
 
       def find_magic_column_by_name(attr_name)
-        magic_columns.to_a.find {|column| column.name == attr_name}
+        magic_columns.to_a.find { |column| column.name == attr_name }
       end
 
       def create_magic_attribute(magic_column, value)
-        magic_attributes << MagicAttribute.create(:magic_column => magic_column, :value => value)
+        magic_changes[magic_column.name] = [nil, value]
+        magic_attributes << MagicAttribute.create(magic_column: magic_column, value: value)
         self.touch if self.persisted?
       end
 
       def update_magic_attribute(magic_attribute, value)
-        magic_attribute.update_attributes(:value => value)
+        return if magic_attribute.value == value
+        magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, value]
+        magic_attribute.update_attributes(value: value)
         self.touch if self.persisted? && magic_attribute.updated_at > self.updated_at
       end
 
       def destroy_magic_attribute(magic_attribute)
+        magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, nil]
         magic_attribute.destroy
         self.touch if self.persisted?
       end
@@ -141,7 +156,6 @@ module HasMagicColumns
         end
       end
     end
-
 
     %w{ models }.each do |dir|
       path = File.join(File.dirname(__FILE__), '../app', dir)
