@@ -9,8 +9,8 @@ module HasMagicColumns
       def has_magic_columns(options = {})
         unless magical?
           # Associations
-          has_many :magic_attribute_relationships, :as => :owner, :dependent => :destroy
-          has_many :magic_attributes, :through => :magic_attribute_relationships, :dependent => :destroy
+          has_many :magic_attribute_relationships, as: :owner, dependent: :destroy
+          has_many :magic_attributes, through: :magic_attribute_relationships, dependent: :destroy
 
           # Inheritence
           cattr_accessor :inherited_from
@@ -27,8 +27,8 @@ module HasMagicColumns
 
           # otherwise the calling model has the relationships
           else
-            has_many :magic_column_relationships, :as => :owner, :dependent => :destroy
-            has_many :magic_columns, :through => :magic_column_relationships, :dependent => :destroy
+            has_many :magic_column_relationships, as: :owner, dependent: :destroy
+            has_many :magic_columns, through: :magic_column_relationships, dependent: :destroy
           end
         end
         include InstanceMethods
@@ -41,7 +41,7 @@ module HasMagicColumns
 
     module InstanceMethods
       def magic_column_names
-        magic_columns.map(&:name)
+        magic_columns.pluck(:name)
       end
 
       def magic_changes
@@ -116,14 +116,14 @@ module HasMagicColumns
 
       def create_magic_attribute(magic_column, value)
         magic_changes[magic_column.name] = [nil, value]
-        magic_attributes << MagicAttribute.create(:magic_column => magic_column, :value => value)
+        magic_attributes << MagicAttribute.create(magic_column: magic_column, value: value)
         self.touch if self.persisted?
       end
 
       def update_magic_attribute(magic_attribute, value)
         return if magic_attribute.value == value
         magic_changes[magic_attribute.magic_column.name] = [magic_attribute.value, value]
-        magic_attribute.update_attributes(:value => value)
+        magic_attribute.update_attributes(value: value)
         self.touch if self.persisted? && magic_attribute.updated_at > self.updated_at
       end
 
