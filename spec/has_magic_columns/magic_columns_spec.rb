@@ -109,8 +109,11 @@ describe HasMagicColumns do
       charlie.magic_columns.create(name: "zip")
       expect(charlie.magic_changes).to be_empty
       expect(charlie.magic_changed?).to be false
-      charlie.update_attributes(zip: "12345")
-      expect(charlie.magic_changes).to eq "zip" => [nil, "12345"]
+      charlie.update_attributes(zip: "")
+      expect(charlie.magic_changes).to be_empty
+      expect(charlie.magic_changed?).to be false
+      charlie.update_attributes(zip: 12345)
+      expect(charlie.magic_changes).to eq "zip" => [nil, 12345]
       expect(charlie.magic_changed?).to be true
       charlie.update_attributes(zip: "54321")
       expect(charlie.magic_changes).to eq "zip" => ["12345", "54321"]
