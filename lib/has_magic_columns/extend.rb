@@ -80,6 +80,18 @@ module HasMagicColumns
 
       private
 
+      # Load the MagicAttribute(s) associated with attr_name and cast them to proper type.
+      def read_attribute_with_magic(attr_name)
+        column = find_magic_column_by_name(attr_name)
+        attribute = find_magic_attribute_by_column(column)
+        if column.datatype.to_s == 'check_box_multiple'
+          attribute.map { |attr| column.type_cast(attr.value) }
+        else
+          value = (attr = attribute.first) ? attr.to_s : column.default
+          value.nil? ? nil : column.type_cast(value)
+        end
+      end
+
       def method_missing(method_id, *args)
         super(method_id, *args)
       rescue NameError
@@ -103,7 +115,6 @@ module HasMagicColumns
       end
 
       def create_magic_attribute(magic_column, value)
-        return if value.to_s.blank?
         magic_changes[magic_column.name] = [nil, value]
         magic_attributes << MagicAttribute.create(magic_column: magic_column, value: value)
         self.touch if self.persisted?
@@ -126,31 +137,22 @@ module HasMagicColumns
         column = find_magic_column_by_name(column_name)
         existing = find_magic_attribute_by_column(column)
 
-        if value.is_a?(Array) && column.datatype.to_s == "check_box_multiple"
+        if value.is_a?(Array) && column.datatype == "check_box_multiple"
           existing.map(&:destroy) if existing
           value.reject!(&:blank?)
-          value.each do |val|
-            create_magic_attribute(column, val)
+          if value.present?
+            value.each do |val|
+              create_magic_attribute(column, val)
+            end
           end
         else
           value = value.first if value.is_a?(Array)
 
           if (attr = existing.first)
-            value.to_s.present? ? update_magic_attribute(attr, value) : destroy_magic_attribute(attr)
+            value.present? ? update_magic_attribute(attr, value) : destroy_magic_attribute(attr)
           else
             create_magic_attribute(column, value)
           end
-        end
-      end
-
-      def read_attribute_with_magic(attr_name)
-        column = find_magic_column_by_name(attr_name)
-        attribute = find_magic_attribute_by_column(column)
-        if column.datatype.to_s == 'check_box_multiple'
-          attribute.map { |attr| column.type_cast(attr.value) }
-        else
-          value = (attr = attribute.first) ? attr.to_s : column.default
-          value.nil? ? nil : column.type_cast(value)
         end
       end
     end
@@ -161,5 +163,6 @@ module HasMagicColumns
       ActiveSupport::Dependencies.autoload_paths << path
       ActiveSupport::Dependencies.autoload_once_paths.delete(path)
     end
+
   end
 end
