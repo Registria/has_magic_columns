@@ -115,6 +115,7 @@ module HasMagicColumns
       end
 
       def create_magic_attribute(magic_column, value)
+        return if value.to_s.blank?
         magic_changes[magic_column.name] = [nil, value]
         magic_attributes << MagicAttribute.create(magic_column: magic_column, value: value)
         self.touch if self.persisted?
@@ -149,7 +150,7 @@ module HasMagicColumns
           value = value.first if value.is_a?(Array)
 
           if (attr = existing.first)
-            value.present? ? update_magic_attribute(attr, value) : destroy_magic_attribute(attr)
+            value.to_s.present? ? update_magic_attribute(attr, value) : destroy_magic_attribute(attr)
           else
             create_magic_attribute(column, value)
           end
