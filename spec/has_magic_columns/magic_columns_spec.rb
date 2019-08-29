@@ -109,18 +109,30 @@ describe HasMagicColumns do
       charlie.magic_columns.create(name: "zip")
       expect(charlie.magic_changes).to be_empty
       expect(charlie.magic_changed?).to be false
+
       charlie.update_attributes(zip: "")
       expect(charlie.magic_changes).to be_empty
       expect(charlie.magic_changed?).to be false
+
       charlie.update_attributes(zip: 12345)
       expect(charlie.magic_changes).to eq "zip" => [nil, 12345]
       expect(charlie.magic_changed?).to be true
+
       charlie.update_attributes(zip: "54321")
       expect(charlie.magic_changes).to eq "zip" => ["12345", "54321"]
       expect(charlie.magic_changed?).to be true
+
+      expect(charlie.reload.magic_changes).to be_empty
+      expect(charlie.magic_changed?).to be false
+
+      charlie.update_attributes(zip: "54321")
+      expect(charlie.magic_changes).to be_empty
+      expect(charlie.magic_changed?).to be false
+
       charlie.update_attributes(zip: nil)
       expect(charlie.magic_changes).to eq "zip" => ["54321", nil]
       expect(charlie.magic_changed?).to be true
+
       expect(charlie.reload.magic_changes).to be_empty
       expect(charlie.magic_changed?).to be false
     end
@@ -148,6 +160,34 @@ describe HasMagicColumns do
         expect(charlie.reload.multiple).to eq ["1"]
         charlie.update_attributes(multiple: "2")
         expect(charlie.reload.multiple).to eq ["2"]
+      end
+
+      it "tracks magic changes" do
+        charlie.update_attributes(multiple: [])
+        expect(charlie.magic_changes).to be_empty
+        expect(charlie.magic_changed?).to be false
+
+        charlie.update_attributes(multiple: [""])
+        expect(charlie.magic_changes).to be_empty
+        expect(charlie.magic_changed?).to be false
+
+        charlie.update_attributes(multiple: ["1", "2"])
+        expect(charlie.magic_changes).to eq "multiple" => [nil, ["1", "2"]]
+        expect(charlie.magic_changed?).to be true
+
+        expect(charlie.reload.magic_changes).to be_empty
+        expect(charlie.magic_changed?).to be false
+
+        charlie.update_attributes(multiple: ["1", "2"])
+        expect(charlie.magic_changes).to be_empty
+        expect(charlie.magic_changed?).to be false
+
+        charlie.update_attributes(multiple: [])
+        expect(charlie.magic_changes).to eq "multiple" => [["1", "2"], nil]
+        expect(charlie.magic_changed?).to be true
+
+        expect(charlie.reload.magic_changes).to be_empty
+        expect(charlie.magic_changed?).to be false
       end
     end
   end
