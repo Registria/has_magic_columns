@@ -114,6 +114,23 @@ module HasMagicColumns
         magic_columns.to_a.find { |column| column.name == attr_name }
       end
 
+      def create_magic_attributes(magic_column, existing, values)
+        return if existing.map(&:value).sort == values.sort
+        existing.map(&:destroy) if existing.present?
+        values.each do |value|
+          magic_attributes << MagicAttribute.create(magic_column: magic_column, value: value)
+        end
+        magic_changes[magic_column.name] = [nil, values]
+        self.touch if self.persisted?
+      end
+
+      def destroy_magic_attributes(magic_column, existing)
+        return if existing.blank?
+        existing.map(&:destroy)
+        magic_changes[magic_column.name] = [existing.map(&:value), nil]
+        self.touch if self.persisted?
+      end
+
       def create_magic_attribute(magic_column, value)
         return if value.to_s.blank?
         magic_changes[magic_column.name] = [nil, value]
@@ -139,13 +156,8 @@ module HasMagicColumns
         existing = find_magic_attribute_by_column(column)
 
         if value.is_a?(Array) && column.datatype == "check_box_multiple"
-          existing.map(&:destroy) if existing
           value.reject!(&:blank?)
-          if value.present?
-            value.each do |val|
-              create_magic_attribute(column, val)
-            end
-          end
+          value.present? ? create_magic_attributes(column, existing, value) : destroy_magic_attributes(column, existing)
         else
           value = value.first if value.is_a?(Array)
 
