@@ -115,7 +115,7 @@ module HasMagicColumns
       end
 
       def create_magic_attributes(magic_column, existing, values)
-        return if existing.map(&:value) == values
+        return if existing.map(&:value).sort == values.sort
         existing.map(&:destroy) if existing.present?
         values.each do |value|
           magic_attributes << MagicAttribute.create(magic_column: magic_column, value: value)

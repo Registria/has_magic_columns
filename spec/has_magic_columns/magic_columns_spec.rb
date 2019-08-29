@@ -178,7 +178,7 @@ describe HasMagicColumns do
         expect(charlie.reload.magic_changes).to be_empty
         expect(charlie.magic_changed?).to be false
 
-        charlie.update_attributes(multiple: ["1", "2"])
+        charlie.update_attributes(multiple: ["2", "1"])
         expect(charlie.magic_changes).to be_empty
         expect(charlie.magic_changed?).to be false
 
