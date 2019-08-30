@@ -13,7 +13,7 @@ module HasMagicColumns
           has_many :magic_attributes, through: :magic_attribute_relationships, dependent: :destroy
 
           if options[:through].present?
-            delegate :magic_columns, to: options[:through]
+            delegate :magic_columns, to: options[:through], allow_nil: true
           else
             has_many :magic_column_relationships, as: :owner, dependent: :destroy
             has_many :magic_columns, through: :magic_column_relationships, dependent: :destroy
