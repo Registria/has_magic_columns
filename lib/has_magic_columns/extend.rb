@@ -12,8 +12,14 @@ module HasMagicColumns
           has_many :magic_attribute_relationships, as: :owner, dependent: :destroy
           has_many :magic_attributes, through: :magic_attribute_relationships, dependent: :destroy
 
-          if options[:through].present?
-            delegate :magic_columns, to: options[:through], allow_nil: true
+          cattr_accessor :inherited_from
+          if (self.inherited_from = options[:through])
+            class_eval do
+              def magic_columns
+                raise "Cannot inherit MagicColumns from a non-existant association: #{inherited_from}" unless self.class.method_defined?(inherited_from)
+                send(inherited_from).magic_columns rescue []
+              end
+            end
           else
             has_many :magic_column_relationships, as: :owner, dependent: :destroy
             has_many :magic_columns, through: :magic_column_relationships, dependent: :destroy
@@ -29,7 +35,7 @@ module HasMagicColumns
 
     module InstanceMethods
       def magic_column_names
-        (magic_columns || []).map(&:name)
+        magic_columns.map(&:name)
       end
 
       def magic_changes
