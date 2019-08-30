@@ -29,7 +29,7 @@ module HasMagicColumns
 
     module InstanceMethods
       def magic_column_names
-        magic_columns.pluck(:name)
+        (magic_columns || []).map(&:name)
       end
 
       def magic_changes
