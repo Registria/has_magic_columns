@@ -67,7 +67,7 @@ module HasMagicColumns
         end
       end
 
-      def reload
+      def reload(options = nil)
         @magic_changes = {}
         super
       end
