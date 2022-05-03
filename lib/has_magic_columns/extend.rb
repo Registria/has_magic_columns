@@ -24,6 +24,8 @@ module HasMagicColumns
             has_many :magic_column_relationships, as: :owner, dependent: :destroy
             has_many :magic_columns, through: :magic_column_relationships, dependent: :destroy
           end
+
+          scope :has_magic_value, -> (key, value) { joins(magic_attributes: :magic_column).where(magic_columns: { name: key }, magic_attributes: { value: value }) }
         end
         include InstanceMethods
       end

@@ -137,6 +137,16 @@ describe HasMagicColumns do
       expect(charlie.magic_changed?).to be false
     end
 
+    it "has magic values scope" do
+      charlie.magic_columns.create(name: "zip")
+      charlie.update_attributes(zip: "12345")
+
+      expect(Person.has_magic_value("zip", "12345")).to eq [charlie]
+      expect(Person.has_magic_value("zip", "54321")).to be_empty
+      expect(Person.has_magic_value("zip", "")).to be_empty
+      expect(Person.has_magic_value("zip", nil)).to be_empty
+    end
+
     context ":check_box_multiple" do
       before { charlie.magic_columns.create(name: "multiple", datatype: "check_box_multiple") }
 
